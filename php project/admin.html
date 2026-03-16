@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | Shree Events</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Cinzel+Decorative:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --admin-primary: #ef4444;
+            --admin-dark: #991b1b;
+            --admin-bg: #0f172a;
+            --accent-glow: rgba(239, 68, 68, 0.5);
+        }
+
+        body.admin-mode {
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Face Auth Overlay */
+        #face-auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .camera-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            padding: 8px;
+            background: linear-gradient(45deg, var(--admin-primary), #f87171);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .camera-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #000;
+            border: 4px solid #0f172a;
+        }
+
+        #auth-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--admin-primary);
+            box-shadow: 0 0 15px var(--admin-primary), 0 0 30px var(--admin-primary);
+            z-index: 10;
+            animation: scanMove 3s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes scanMove {
+
+            0%,
+            100% {
+                top: 10%;
+            }
+
+            50% {
+                top: 90%;
+            }
+        }
+
+        .auth-status {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .auth-hint {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .auth-success-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 80px;
+            color: #22c55e;
+            z-index: 20;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+        }
+
+        .auth-success-icon.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .hud-bracket {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--admin-primary);
+            z-index: 5;
+        }
+
+        .top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .top-right {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .auth-error-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 80px;
+            color: #ef4444;
+            z-index: 20;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .auth-error-icon.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .face-reference {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://ui-avatars.com/api/?name=Prabhanjan&background=dc2626&color=fff&size=512') no-repeat center;
+            background-size: cover;
+            opacity: 0.15;
+            mix-blend-mode: overlay;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Sidebar & Content styles */
+        .admin-sidebar {
+            background-color: var(--admin-bg);
+            border-right: 4px solid var(--admin-primary);
+        }
+
+        .admin-sidebar .logo span {
+            color: var(--admin-primary);
+        }
+
+        .admin-sidebar .nav-links li.active {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .admin-sidebar .nav-links li.active a {
+            color: var(--admin-primary);
+        }
+
+        .admin-badge {
+            background: var(--admin-primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body class="admin-mode">
+
+    <!-- Password Auth Portal -->
+    <div id="face-auth-container">
+        <div class="auth-card">
+            <div style="margin-bottom: 30px;">
+                <i class="fa-solid fa-shield-halved"
+                    style="font-size: 40px; color: var(--admin-primary); margin-bottom: 15px;"></i>
+                <h2 style="font-family: 'Cinzel Decorative'; font-size: 24px; margin-bottom: 5px;">Master Portal</h2>
+                <p style="color: #94a3b8; font-size: 14px;">Master Password Required for Admin Access</p>
+            </div>
+
+            <div id="login-area" style="width: 100%; max-width: 300px; margin: 0 auto;">
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <input type="password" id="admin-password" placeholder="Enter Master Code" maxlength="10"
+                        style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--admin-primary); border-radius: 8px; padding: 15px; color: white; text-align: center; font-size: 18px; outline: none; transition: all 0.3s; letter-spacing: 2px;">
+                </div>
+                <button id="login-submit-btn" class="btn-primary"
+                    style="background: var(--admin-primary); width: 100%; padding: 15px; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; border: none; transition: transform 0.2s;">
+                    Unlock Portal
+                </button>
+                <div id="login-error"
+                    style="color: #ef4444; font-size: 13px; margin-top: 15px; display: none; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 5px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Access Denied: Incorrect Password
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; color: #64748b; font-size: 11px;">
+                <i class="fa-solid fa-lock"></i> Secure 256-bit Encrypted Management
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Layout (Hidden initially) -->
+    <div class="app-container" id="admin-main-ui" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar admin-sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-user-shield"></i>
+                <span>Admin Portal</span>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active"><a href="#admin-dashboard"><i class="fa-solid fa-chart-line"></i>
+                        <span>Overview</span></a></li>
+                <li><a href="#new-bookings"><i class="fa-solid fa-clock"></i> <span>Pending Requests</span></a></li>
+                <li><a href="#manage-users"><i class="fa-solid fa-users"></i> <span>User Database</span></a></li>
+                <li><a href="#event-inventory"><i class="fa-solid fa-boxes-stacked"></i> <span>Master Data</span></a>
+                </li>
+                <li><a href="#system-reports"><i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>Financials</span></a></li>
+                <li class="divider" style="height: 1px; background: rgba(255,255,255,0.1); margin: 20px 16px;"></li>
+                <li><a href="index.html#dashboard"><i class="fa-solid fa-arrow-left"></i> <span>Back to Site</span></a>
+                </li>
+            </ul>
+
+            <div class="user-profile-mini">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=dc2626&color=fff" alt="Admin">
+                <div class="user-info">
+                    <h4>Super Admin</h4>
+                    <p>System Principal</p>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar admin-header">
+                <div class="page-title">
+                    <div
+                        style="display: inline-flex; align-items: center; gap: 5px; color: var(--admin-primary); font-weight: 600; font-size: 12px; margin-bottom: 10px;">
+                        <i class="fa-solid fa-shield"></i> Biometric Verified Access
+                    </div>
+                    <h1 id="admin-page-title">Admin Dashboard</h1>
+                </div>
+                <div class="top-actions">
+                    <button class="btn-primary" style="background: var(--admin-primary);"
+                        onclick="window.location.reload()">
+                        <i class="fa-solid fa-rotate"></i> Refresh System
+                    </button>
+                    <button class="icon-btn" id="admin-logout" style="color: var(--admin-primary);">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div id="admin-content-area" class="content-wrapper">
+                <!-- Dynamic Content Load -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Admin Script -->
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loginBtn = document.getElementById('login-submit-btn');
+            const passwordInput = document.getElementById('admin-password');
+            const loginError = document.getElementById('login-error');
+            const authContainer = document.getElementById('face-auth-container');
+            const mainUI = document.getElementById('admin-main-ui');
+            const adminContent = document.getElementById('admin-content-area');
+            const adminTitle = document.getElementById('admin-page-title');
+
+            // --- Password Authentication Logic ---
+            loginBtn.addEventListener('click', () => {
+                const password = passwordInput.value;
+                if (password === '1430' || password === 'admin123') { // Fixed Master Passwords
+                    loginBtn.textContent = "Verifying...";
+                    loginBtn.style.background = "#22c55e";
+                    loginError.style.display = 'none';
+
+                    // Set Admin Session
+                    const adminUser = {
+                        name: "Prabhanjan Admin",
+                        role: "Administrator",
+                        email: "prabhanjan.admin@shreeevents.com",
+                        avatar: "https://ui-avatars.com/api/?name=Prabhanjan&background=dc2626&color=fff"
+                    };
+                    localStorage.setItem('userData', JSON.stringify(adminUser));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('isProfileFilled', 'true');
+
+                    setTimeout(() => {
+                        authContainer.style.opacity = '0';
+                        authContainer.style.transition = 'opacity 0.5s ease';
+                        setTimeout(() => {
+                            authContainer.style.display = 'none';
+                            mainUI.style.display = 'flex';
+                            handleAdminNav();
+                        }, 500);
+                    }, 1000);
+                } else {
+                    loginError.style.display = 'block';
+                    passwordInput.style.borderColor = "#ef4444";
+                    passwordInput.value = '';
+                    setTimeout(() => {
+                        passwordInput.style.borderColor = "var(--admin-primary)";
+                    }, 2000);
+                }
+            });
+
+            // Allow Enter key to submit
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') loginBtn.click();
+            });
+
+            // --- Admin UI Navigation ---
+            function handleAdminNav() {
+                const hash = window.location.hash || '#admin-dashboard';
+                document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+                const activeLink = document.querySelector(`.nav-links a[href="${hash}"]`);
+                if (activeLink) activeLink.parentElement.classList.add('active');
+
+                if (hash === '#admin-dashboard') renderAdminDashboard();
+                else if (hash === '#new-bookings') renderAdminBookings();
+                else if (hash === '#manage-users') renderAdminUsers();
+                else if (hash === '#event-inventory') renderAdminInventory();
+            }
+
+            function renderAdminDashboard() {
+                adminTitle.textContent = "System Overview";
+                const pending = JSON.parse(localStorage.getItem('shree_pending_bookings')) || [];
+                const approved = JSON.parse(localStorage.getItem('shree_approved_bookings')) || [];
+                const users = JSON.parse(localStorage.getItem('shree_users')) || [];
+
+                adminContent.innerHTML = `
+                    <div class="dashboard-stats" style="grid-template-columns: repeat(4, 1fr);">
+                        <div class="stat-card">
+                            <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i class="fa-solid fa-envelope-open-text"></i></div>
+                            <div class="stat-info"><h3>Requests</h3><p class="number">${pending.length}</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;"><i class="fa-solid fa-circle-check"></i></div>
+                            <div class="stat-info"><h3>Approved</h3><p class="number">${approved.length}</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"><i class="fa-solid fa-users"></i></div>
+                            <div class="stat-info"><h3>Users</h3><p class="number">${users.length}</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div class="stat-info"><h3>Revenue</h3><p class="number">₹1.2M</p></div>
+                        </div>
+                    </div>
+                    <div class="recent-section" style="margin-top: 30px;">
+                        <div class="section-header"><h2>Live System Logs</h2> <span class="status completed">Steady</span></div>
+                        <div style="background: #0f172a; color: #10b981; padding: 20px; border-radius: 12px; font-family: monospace; font-size: 13px;">
+                            <div>> [System] Biometric verification successful at ${new Date().toLocaleTimeString()}</div>
+                            <div>> [Network] Secure websocket tunnel established</div>
+                            <div>> [Database] Initializing global event clusters... Ready</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderAdminBookings() {
+                adminTitle.textContent = "Pending Booking Requests";
+                const pending = JSON.parse(localStorage.getItem('shree_pending_bookings')) || [];
+                adminContent.innerHTML = `
+                    <div class="recent-section">
+                        <div class="section-header"><h2>Pending Approvals</h2></div>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Customer</th><th>Event</th><th>Date</th><th>Actions</th></tr></thead>
+                                <tbody>
+                                    ${pending.length === 0 ? '<tr><td colspan="4" style="text-align:center; padding:40px;">No pending requests found.</td></tr>' :
+                        pending.map((item, index) => `
+                                        <tr>
+                                            <td>${item.customerName || 'Guest'}</td>
+                                            <td>${item.name}</td>
+                                            <td>${item.eventDate || item.date || 'TBD'}</td>
+                                            <td>
+                                                <button class="btn-primary" style="padding: 5px 10px; background: #22c55e; font-size: 11px;" onclick="approveBooking(${index})">Approve</button>
+                                                <button class="btn-primary" style="padding: 5px 10px; background: #ef4444; font-size: 11px;" onclick="cancelBooking(${index})">Decline</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderAdminInventory() {
+                adminTitle.textContent = "Master Data Overview";
+                adminContent.innerHTML = `
+                    <div class="recent-section">
+                        <div class="section-header"><h2>Event & Service Inventory</h2></div>
+                        <p style="padding: 20px; color: #64748b;">The master inventory is currently managed via the global system script. To edit these, update the servicesList and eventsList objects.</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px 20px;">
+                             <div class="stat-card"><h3>Services</h3><p class="number">7 Items</p></div>
+                             <div class="stat-card"><h3>Events</h3><p class="number">5 Items</p></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderAdminUsers() {
+                adminTitle.textContent = "User Management Console";
+                const users = JSON.parse(localStorage.getItem('shree_users')) || [];
+                adminContent.innerHTML = `
+                    <div class="recent-section">
+                        <div class="section-header"><h2>Registered System Users</h2></div>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
+                                <tbody>
+                                    ${users.map(u => `
+                                        <tr>
+                                            <td>${u.name}</td>
+                                            <td>${u.email}</td>
+                                            <td><span class="admin-badge">${u.role || 'User'}</span></td>
+                                            <td><span class="status completed">Active</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            window.approveBooking = function (index) {
+                let pending = JSON.parse(localStorage.getItem('shree_pending_bookings')) || [];
+                let approved = JSON.parse(localStorage.getItem('shree_approved_bookings')) || [];
+                let item = pending.splice(index, 1)[0];
+                item.status = 'Approved';
+                approved.push(item);
+                localStorage.setItem('shree_pending_bookings', JSON.stringify(pending));
+                localStorage.setItem('shree_approved_bookings', JSON.stringify(approved));
+                renderAdminBookings();
+            }
+
+            window.cancelBooking = function (index) {
+                let pending = JSON.parse(localStorage.getItem('shree_pending_bookings')) || [];
+                let cancelled = JSON.parse(localStorage.getItem('shree_cancelled_bookings')) || [];
+                let item = pending.splice(index, 1)[0];
+                item.status = 'Cancelled';
+                cancelled.push(item);
+                localStorage.setItem('shree_pending_bookings', JSON.stringify(pending));
+                localStorage.setItem('shree_cancelled_bookings', JSON.stringify(cancelled));
+                renderAdminBookings();
+            }
+
+            window.simulateAuth = () => {
+                authLabel.textContent = "Manual Override Activated";
+                setTimeout(() => {
+                    authContainer.style.display = 'none';
+                    mainUI.style.display = 'flex';
+                    handleAdminNav();
+                }, 1000);
+            };
+
+            window.addEventListener('hashchange', handleAdminNav);
+            document.getElementById('admin-logout').addEventListener('click', () => {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userData');
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+
+</html>

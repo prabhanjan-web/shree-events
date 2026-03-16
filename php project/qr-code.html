@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Events | QR Code Generator</title>
+    <meta name="description" content="Generate a lifetime QR code for Shree Events website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --green: #10b981;
+            --amber: #fbbf24;
+            --red: #ef4444;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 30px 20px 60px;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 28px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        /* ─── Header ─── */
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
+        }
+        .logo i { color: #fbbf24; font-size: 26px; }
+        .subtitle {
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .lifetime-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.35);
+            color: #10b981;
+            border-radius: 30px;
+            padding: 4px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+        .lifetime-pill i { font-size: 10px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ─── Tabs ─── */
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 24px;
+            gap: 4px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.5);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+        }
+
+        /* ─── Input ─── */
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.4);
+            font-size: 16px;
+        }
+        .input-group input {
+            width: 100%;
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 16px 18px 16px 48px;
+            color: white;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .input-group input::placeholder { color: rgba(255,255,255,0.3); }
+        .input-group input:focus {
+            border-color: var(--primary);
+            background: rgba(99,102,241,0.1);
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+        }
+        .input-group input.error { border-color: var(--red); }
+
+        /* ─── Preset URLs ─── */
+        .preset-label {
+            text-align: left;
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        .preset-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .chip {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: rgba(255,255,255,0.65);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chip:hover {
+            background: rgba(99,102,241,0.2);
+            border-color: var(--primary);
+            color: white;
+        }
+        .chip i { font-size: 10px; color: var(--amber); }
+
+        /* ─── Button ─── */
+        .btn-generate {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(99,102,241,0.4);
+        }
+        .btn-generate:active { transform: translateY(0); }
+
+        /* ─── QR Output ─── */
+        .qr-output {
+            display: none;
+            animation: fadeUp 0.5s ease;
+        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .qr-wrapper {
+            background: white;
+            border-radius: 22px;
+            padding: 24px;
+            display: inline-block;
+            margin-bottom: 16px;
+            box-shadow: 0 20px 50px rgba(99,102,241,0.3), 0 0 0 6px rgba(99,102,241,0.1);
+            position: relative;
+        }
+        .qr-wrapper canvas { display: block; border-radius: 10px; }
+        .qr-label {
+            position: absolute;
+            bottom: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+        .qr-url {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: #a5b4fc;
+            font-size: 13px;
+            word-break: break-all;
+            margin: 22px 0 16px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .qr-url i { color: #6366f1; font-size: 16px; flex-shrink: 0; }
+        .saved-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: var(--green);
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+        /* ─── Action Buttons ─── */
+        .btn-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .btn-row-2 { display: flex; gap: 10px; }
+        .action-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .btn-download { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+        .btn-download:hover { background: rgba(16,185,129,0.25); transform: translateY(-2px); }
+        .btn-copy { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3); }
+        .btn-copy:hover { background: rgba(99,102,241,0.25); transform: translateY(-2px); }
+        .btn-share { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+        .btn-share:hover { background: rgba(251,191,36,0.2); transform: translateY(-2px); }
+        .btn-clear { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+        .btn-clear:hover { background: rgba(239,68,68,0.2); transform: translateY(-2px); }
+
+        /* ─── Divider ─── */
+        .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 32px 0; }
+
+        /* ─── Deploy Section ─── */
+        .deploy-tab-content { display: none; text-align: left; }
+        .deploy-tab-content.active { display: block; }
+        .platform-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .platform-btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .platform-btn.active, .platform-btn:hover {
+            background: rgba(99,102,241,0.2);
+            border-color: var(--primary);
+            color: white;
+        }
+        .steps-title {
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .steps-title i { color: #fbbf24; }
+        .step-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+        .step-num {
+            min-width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+        .step-text {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            line-height: 1.6;
+            padding-top: 4px;
+        }
+        .step-text strong { color: white; }
+        .step-text a { color: #a5b4fc; text-decoration: none; }
+        .step-text a:hover { color: #c7d2fe; text-decoration: underline; }
+        .badge {
+            display: inline-block;
+            background: rgba(251,191,36,0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251,191,36,0.3);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge.green {
+            background: rgba(16,185,129,0.15);
+            color: #10b981;
+            border-color: rgba(16,185,129,0.3);
+        }
+        .alert-box {
+            background: rgba(16,185,129,0.08);
+            border: 1px solid rgba(16,185,129,0.2);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .alert-box i { color: var(--green); flex-shrink: 0; margin-top: 2px; }
+        .alert-box p { color: rgba(255,255,255,0.7); font-size: 13px; line-height: 1.5; }
+        .alert-box strong { color: white; }
+
+        /* ─── Plan content sections ─── */
+        .plan-section { display: none; }
+        .plan-section.active { display: block; }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <!-- Header -->
+        <div class="logo">
+            <i class="fa-solid fa-star"></i>
+            Shree Events
+        </div>
+        <div class="subtitle">QR Code Generator</div>
+        <div class="lifetime-pill">
+            <i class="fa-solid fa-circle"></i>
+            Lifetime QR — Saved Permanently
+        </div>
+
+        <!-- Main Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-qr" onclick="switchTab('qr')">
+                <i class="fa-solid fa-qrcode"></i> Generate QR
+            </button>
+            <button class="tab-btn" id="tab-deploy" onclick="switchTab('deploy')">
+                <i class="fa-solid fa-rocket"></i> Deploy Guide
+            </button>
+        </div>
+
+        <!-- ═══════════ QR TAB ═══════════ -->
+        <div id="section-qr">
+            <div class="input-group">
+                <i class="fa-solid fa-link"></i>
+                <input type="url" id="site-url"
+                    placeholder="Paste your deployed website URL here..."
+                    oninput="clearError()" />
+            </div>
+
+            <div class="preset-label">⚡ QUICK PRESETS — click to auto-fill</div>
+            <div class="preset-chips">
+                <div class="chip" onclick="setPreset('vercel')">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Vercel
+                </div>
+                <div class="chip" onclick="setPreset('github')">
+                    <i class="fa-brands fa-github"></i> GitHub Pages
+                </div>
+                <div class="chip" onclick="setPreset('surge')">
+                    <i class="fa-solid fa-bolt"></i> Surge.sh
+                </div>
+                <div class="chip" onclick="setPreset('netlify')">
+                    <i class="fa-solid fa-cloud"></i> Netlify
+                </div>
+            </div>
+
+            <button class="btn-generate" onclick="generateQR()" id="gen-btn">
+                <i class="fa-solid fa-qrcode"></i>
+                Generate & Save Lifetime QR
+            </button>
+
+            <!-- QR Output -->
+            <div class="qr-output" id="qr-output">
+                <div class="qr-wrapper">
+                    <canvas id="qr-canvas"></canvas>
+                    <div class="qr-label">✦ SHREE EVENTS ✦</div>
+                </div>
+
+                <div class="saved-badge">
+                    <i class="fa-solid fa-circle-check"></i>
+                    QR saved — it will reload automatically next time
+                </div>
+
+                <div class="qr-url">
+                    <i class="fa-solid fa-globe"></i>
+                    <span id="qr-url-text"></span>
+                </div>
+
+                <div class="btn-row">
+                    <button class="action-btn btn-download" onclick="downloadQR()">
+                        <i class="fa-solid fa-download"></i> Download PNG
+                    </button>
+                    <button class="action-btn btn-copy" onclick="copyURL()" id="copy-btn">
+                        <i class="fa-solid fa-copy"></i> Copy URL
+                    </button>
+                </div>
+                <div class="btn-row-2">
+                    <button class="action-btn btn-share" onclick="shareQR()">
+                        <i class="fa-solid fa-share-nodes"></i> Share
+                    </button>
+                    <button class="action-btn btn-clear" onclick="clearSaved()">
+                        <i class="fa-solid fa-trash"></i> Clear Saved
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ DEPLOY TAB ═══════════ -->
+        <div id="section-deploy" style="display:none; text-align:left;">
+
+            <div class="alert-box">
+                <i class="fa-solid fa-circle-info"></i>
+                <p><strong>Netlify Drop not working?</strong> No problem — use any of these <strong>3 free alternatives</strong> below. All give you a permanent public URL that works forever.</p>
+            </div>
+
+            <!-- Platform selector -->
+            <div class="platform-tabs">
+                <button class="platform-btn active" onclick="showPlan('vercel', this)">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> Vercel
+                </button>
+                <button class="platform-btn" onclick="showPlan('surge', this)">
+                    <i class="fa-solid fa-bolt" style="color:#a5b4fc"></i> Surge.sh
+                </button>
+                <button class="platform-btn" onclick="showPlan('github', this)">
+                    <i class="fa-brands fa-github"></i> GitHub Pages
+                </button>
+            </div>
+
+            <!-- VERCEL -->
+            <div class="plan-section active" id="plan-vercel">
+                <div class="steps-title"><i class="fa-solid fa-star"></i> Deploy with Vercel (Recommended)</div>
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Go to <a href="https://vercel.com" target="_blank"><strong>vercel.com</strong></a> and sign up free with Google or GitHub</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Click <strong>"Add New → Project"</strong> on the dashboard</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Scroll down and click <strong>"Browse"</strong> under "Import Project" → select your <strong>php project</strong> folder from Desktop</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-text">Leave all settings as default and click <strong>"Deploy"</strong></div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">5</div>
+                    <div class="step-text">
+                        In ~30 seconds you'll get a URL like:<br>
+                        <span class="badge">shree-events.vercel.app</span>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">6</div>
+                    <div class="step-text">Copy that URL → go to <strong>Generate QR tab</strong> → paste & generate your <span class="badge green">Lifetime QR</span></div>
+                </div>
+            </div>
+
+            <!-- SURGE -->
+            <div class="plan-section" id="plan-surge">
+                <div class="steps-title"><i class="fa-solid fa-bolt"></i> Deploy with Surge.sh (Fastest — No signup needed!)</div>
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Open <strong>Command Prompt</strong> (Win+R → type <code>cmd</code> → Enter)</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-text">
+                        Install surge (one time only):<br>
+                        <code style="background:rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px;">npm install --global surge</code>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-text">
+                        Navigate to your project folder:<br>
+                        <code style="background:rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px;">cd "C:\Users\Prabhanjan S\OneDrive\Desktop\php project"</code>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-text">
+                        Run surge:<br>
+                        <code style="background:rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px;">surge . shree-events.surge.sh</code>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">5</div>
+                    <div class="step-text">Enter any email & password when asked (creates account automatically). Your site is live at:<br>
+                        <span class="badge">shree-events.surge.sh</span> — <strong>Free forever!</strong>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">6</div>
+                    <div class="step-text">Copy that URL → <strong>Generate QR tab</strong> → paste & generate your <span class="badge green">Lifetime QR</span></div>
+                </div>
+            </div>
+
+            <!-- GITHUB PAGES -->
+            <div class="plan-section" id="plan-github">
+                <div class="steps-title"><i class="fa-brands fa-github"></i> Deploy with GitHub Pages (100% Permanent)</div>
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Create a free account at <a href="https://github.com" target="_blank"><strong>github.com</strong></a></div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Click <strong>"New Repository"</strong> → name it <strong>shree-events</strong> → set to Public → click Create</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Click <strong>"uploading an existing file"</strong> → drag your entire <strong>php project</strong> folder contents into the upload box</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-text">Click <strong>"Commit changes"</strong> (green button at bottom)</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">5</div>
+                    <div class="step-text">Go to <strong>Settings → Pages → Source → Deploy from branch → main → / (root)</strong> → Save</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">6</div>
+                    <div class="step-text">Wait 2 mins. Your site is live at:<br>
+                        <span class="badge">yourusername.github.io/shree-events</span>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">7</div>
+                    <div class="step-text">Copy that URL → <strong>Generate QR tab</strong> → paste & generate your <span class="badge green">Lifetime QR</span></div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.card -->
+
+    <script>
+        const STORAGE_KEY = 'shreeevents_qr_url';
+
+        // ─── Preset URL templates ───
+        const presets = {
+            vercel:  'https://shree-events.vercel.app',
+            github:  'https://yourusername.github.io/shree-events',
+            surge:   'https://shree-events.surge.sh',
+            netlify: 'https://shree-events.netlify.app'
+        };
+
+        function setPreset(type) {
+            document.getElementById('site-url').value = presets[type];
+            clearError();
+        }
+
+        function clearError() {
+            const inp = document.getElementById('site-url');
+            inp.classList.remove('error');
+        }
+
+        // ─── Tab Switching ───
+        function switchTab(tab) {
+            document.getElementById('tab-qr').classList.toggle('active', tab === 'qr');
+            document.getElementById('tab-deploy').classList.toggle('active', tab === 'deploy');
+            document.getElementById('section-qr').style.display = tab === 'qr' ? 'block' : 'none';
+            document.getElementById('section-deploy').style.display = tab === 'deploy' ? 'block' : 'none';
+        }
+
+        // ─── Platform Plan Switcher ───
+        function showPlan(name, btn) {
+            document.querySelectorAll('.plan-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('plan-' + name).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // ─── QR Generation ───
+        async function generateQR() {
+            const inp = document.getElementById('site-url');
+            const url = inp.value.trim();
+
+            if (!url) {
+                inp.classList.add('error');
+                inp.placeholder = '⚠ Please enter a URL first!';
+                setTimeout(() => {
+                    inp.classList.remove('error');
+                    inp.placeholder = 'Paste your deployed website URL here...';
+                }, 2000);
+                return;
+            }
+
+            let finalUrl = url;
+            if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                finalUrl = 'https://' + finalUrl;
+                inp.value = finalUrl;
+            }
+
+            const canvas = document.getElementById('qr-canvas');
+            const output = document.getElementById('qr-output');
+            const urlText = document.getElementById('qr-url-text');
+            const btn = document.getElementById('gen-btn');
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+            btn.disabled = true;
+
+            try {
+                await QRCode.toCanvas(canvas, finalUrl, {
+                    width: 260,
+                    margin: 2,
+                    color: { dark: '#1e1b4b', light: '#ffffff' },
+                    errorCorrectionLevel: 'H'
+                });
+
+                urlText.textContent = finalUrl;
+                output.style.display = 'block';
+
+                // Save to localStorage for lifetime persistence
+                localStorage.setItem(STORAGE_KEY, finalUrl);
+
+                output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (err) {
+                alert('Error generating QR code: ' + err.message);
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-qrcode"></i> Generate & Save Lifetime QR';
+                btn.disabled = false;
+            }
+        }
+
+        // ─── Download ───
+        function downloadQR() {
+            const canvas = document.getElementById('qr-canvas');
+            const link = document.createElement('a');
+            link.download = 'ShreeEvents-QRCode.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // ─── Copy URL ───
+        async function copyURL() {
+            const url = document.getElementById('site-url').value.trim() ||
+                        document.getElementById('qr-url-text').textContent;
+            if (!url) return;
+            try {
+                await navigator.clipboard.writeText(url);
+                const btn = document.getElementById('copy-btn');
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btn.style.background = 'rgba(16,185,129,0.2)';
+                btn.style.color = '#10b981';
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2000);
+            } catch {
+                alert('Copy failed. Please copy manually.');
+            }
+        }
+
+        // ─── Share (Web Share API) ───
+        async function shareQR() {
+            const url = document.getElementById('qr-url-text').textContent;
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'Shree Events', text: 'Visit Shree Events!', url });
+                } catch {}
+            } else {
+                copyURL();
+                alert('Share copied to clipboard! (Web Share not supported in this browser)');
+            }
+        }
+
+        // ─── Clear saved QR ───
+        function clearSaved() {
+            if (confirm('Clear the saved QR code?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                document.getElementById('qr-output').style.display = 'none';
+                document.getElementById('site-url').value = '';
+            }
+        }
+
+        // ─── Auto-load saved QR on page open ───
+        window.addEventListener('load', async () => {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                document.getElementById('site-url').value = saved;
+                try {
+                    const canvas = document.getElementById('qr-canvas');
+                    await QRCode.toCanvas(canvas, saved, {
+                        width: 260,
+                        margin: 2,
+                        color: { dark: '#1e1b4b', light: '#ffffff' },
+                        errorCorrectionLevel: 'H'
+                    });
+                    document.getElementById('qr-url-text').textContent = saved;
+                    document.getElementById('qr-output').style.display = 'block';
+                } catch {}
+            }
+        });
+
+        // Enter key support
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('site-url').addEventListener('keypress', e => {
+                if (e.key === 'Enter') generateQR();
+            });
+        });
+    </script>
+</body>
+
+</html>

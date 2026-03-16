@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Events | Premium Event Management</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Cinzel+Decorative:wght@400;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body>
+
+    <!-- Splash Entrance Screen -->
+    <div id="splash-screen" class="splash-screen" title="Click to Enter">
+        <div class="splash-overlay"></div>
+        <div class="splash-actions">
+            <button class="splash-login-btn" id="splash-login-btn">
+                <i class="fa-solid fa-user"></i> Login
+            </button>
+            <button class="splash-login-btn" id="guest-preview-btn">
+                <i class="fa-solid fa-eye"></i> Guest Preview
+            </button>
+            <button class="splash-login-btn" id="splash-admin-btn">
+                <i class="fa-solid fa-user-shield"></i> Admin
+            </button>
+        </div>
+
+        <!-- Unique SHREE Design -->
+        <div class="splash-content">
+            <h1>SHREE EVENTS</h1>
+            <div class="splash-decoration">
+                <span class="line"></span>
+                <i class="fa-solid fa-star"></i>
+                <span class="line"></span>
+            </div>
+        </div>
+
+
+        <!-- Splash Login Form Overlay -->
+        <div class="splash-login-overlay" id="splash-login-overlay">
+            <div class="splash-login-box">
+                <button class="close-login" id="close-splash-login"><i class="fa-solid fa-xmark"></i></button>
+                <div id="login-form-container">
+                    <h2 id="login-title">Account Login</h2>
+                    <form id="splash-login-form">
+                        <div class="login-field name-field">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="user-fullname" placeholder="Full Name" required minlength="3">
+                        </div>
+
+
+                        <div class="login-field email-field" style="display: none;">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="user-email" placeholder="Email Address">
+                        </div>
+
+                        <div class="login-field contact-field" style="display: none;">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="user-contact" placeholder="Contact Number">
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="user-password" placeholder="Password" required>
+                        </div>
+                        <div id="password-requirements"
+                            style="display: none; font-size: 11px; color: #6b7280; margin-top: -10px; margin-bottom: 15px; text-align: left; padding: 0 5px;">
+                            Password must be at least 8 characters and include uppercase, lowercase, number, and special
+                            character.
+                        </div>
+                        <button type="submit" class="btn-login-submit" id="submit-btn-text">Login</button>
+                    </form>
+                    <div class="login-footer"
+                        style="margin-top: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+                        <span id="toggle-text">Don't have an account?</span>
+                        <a href="#" id="toggle-login-mode"
+                            style="color: var(--primary-color); font-weight: 600; text-decoration: none; margin-left: 5px;">Register</a>
+                        <div style="margin-top: 10px;">
+                            <a href="#" id="forgot-pw-link"
+                                style="color: #6b7280; text-decoration: none; font-size: 13px;">Forgot Password?</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forgot Password UI -->
+                <div id="forgot-password-container" style="display: none;">
+                    <h2 style="color: var(--primary-color); margin-bottom: 10px;">Reset Password</h2>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 25px;">Enter your registered email to set
+                        a new password.</p>
+                    <form id="forgot-pw-form">
+                        <div class="login-field">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="reset-email" placeholder="Registered Email Address" required>
+                        </div>
+                        <div id="reset-new-pw-fields" style="display: none;">
+                            <div class="login-field">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="reset-new-password" placeholder="New Password" required>
+                            </div>
+                            <div
+                                style="font-size: 11px; color: #6b7280; margin-top: -10px; margin-bottom: 15px; text-align: left;">
+                                Use 8+ chars with uppercase, lowercase, number, and symbol.
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-login-submit" id="reset-pw-btn">Verify Email</button>
+                    </form>
+                    <div style="margin-top: 20px;">
+                        <a href="#" id="back-to-login"
+                            style="color: var(--primary-color); font-weight: 600; text-decoration: none; font-size: 14px;">Back
+                            to Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Completion Overlay -->
+        <div class="splash-login-overlay" id="profile-completion-overlay">
+            <div class="splash-login-box profile-box" style="max-width: 500px;">
+                <div id="profile-completion-container">
+                    <h2 style="margin-bottom: 10px; color: var(--primary-color);">Complete Your Profile</h2>
+                    <p style="margin-bottom: 25px; font-size: 14px; color: #6b7280;">Please provide your details to
+                        continue to the website.</p>
+                    <form id="profile-completion-form">
+                        <div class="login-field">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="complete-fullname" placeholder="Full Name" required minlength="3">
+                        </div>
+
+                        <div class="login-field">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="complete-phone" placeholder="Contact Number" required
+                                pattern="[0-9]{10}">
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-city"></i>
+                            <input type="text" id="complete-city" placeholder="City" required>
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <input type="text" id="complete-address" placeholder="Full Address" required>
+                        </div>
+                        <button type="submit" class="btn-login-submit">Complete & Enter</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-sparkles" style="font-size: 10px; margin-left: -5px;"></i>
+                <span>Shree Events</span>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active"><a href="#dashboard"><i class="fa-solid fa-grid-2"></i>
+                        <span>Dashboard</span></a>
+                </li>
+                <li><a href="#events"><i class="fa-solid fa-calendar-days"></i> <span>Events</span></a></li>
+                <li><a href="#services"><i class="fa-solid fa-bell-concierge"></i> <span>Services</span></a></li>
+                <li><a href="#all-options"><i class="fa-solid fa-layer-group"></i> <span>All Options</span></a></li>
+                <li class="has-dropdown">
+                    <a href="javascript:void(0)" class="dropdown-toggle">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span>Booking</span>
+                        <i class="fa-solid fa-chevron-down dropdown-indicator"></i>
+                    </a>
+                    <ul class="sub-nav">
+                        <li><a href="#new-booking"><span>New Booking</span> <span class="nav-badge"
+                                    id="badge-new-booking">0</span></a></li>
+                        <li><a href="#approved-booking"><span>Approved Booking</span> <span class="nav-badge success"
+                                    id="badge-approved-booking">0</span></a></li>
+                        <li><a href="#cancelled-booking"><span>Cancelled Booking</span> <span class="nav-badge danger"
+                                    id="badge-cancelled-booking">0</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="#company"><i class="fa-solid fa-building"></i> <span>Company</span></a></li>
+                <li><a href="#contact-shree-events"><i class="fa-solid fa-envelope-open-text"></i> <span>Contact
+                            Shree Events</span></a></li>
+                <li><a href="#other-projects"><i class="fa-solid fa-layer-group"></i> <span>Other Projects</span></a>
+                </li>
+                <li class="admin-portal-link"><a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span>Master
+                            Portal</span></a></li>
+            </ul>
+
+            <div class="user-profile-mini">
+                <img src="https://ui-avatars.com/api/?name=Shree+Events&background=6366f1&color=fff" alt="Profile">
+                <div class="user-info">
+                    <h4>Shree Events</h4>
+                    <p>User</p>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-bar">
+                <div class="toggle-menu">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                <div class="page-title">
+                    <h1 id="page-header">Dashboard</h1>
+                </div>
+                <div class="top-actions">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-search" id="search-btn" style="cursor: pointer;"></i>
+                        <input type="text" id="search-input" placeholder="Search events...">
+                    </div>
+                    <button class="icon-btn position-relative" id="cart-btn">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <div class="dropdown-wrapper">
+                        <button class="icon-btn" id="notifications-btn">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="notification-indicator"></span>
+                        </button>
+                        <div class="dropdown-menu notifications-panel" id="notifications-panel">
+                            <div class="dropdown-header">
+                                <h3>Notifications</h3>
+                                <a href="#" id="mark-read-btn">Mark all read</a>
+                            </div>
+                            <ul class="dropdown-list">
+                                <li class="unread">
+                                    <div class="notif-icon color-1"><i class="fa-solid fa-user-plus"></i></div>
+                                    <div class="notif-text">
+                                        <p><strong>New User Registered</strong></p>
+                                        <span>5 mins ago</span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="notif-icon color-2"><i class="fa-solid fa-calendar-check"></i></div>
+                                    <div class="notif-text">
+                                        <p><strong>Booking Confirmed</strong></p>
+                                        <span>2 hours ago</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="dropdown-wrapper">
+                        <button class="icon-btn" id="settings-btn"><i class="fa-solid fa-gear"></i></button>
+                        <div class="dropdown-menu settings-panel" id="settings-panel">
+                            <ul class="settings-list">
+                                <li><a href="#profile"><i class="fa-regular fa-user"></i> Profile</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" id="view-entrance-btn"><i class="fa-solid fa-image"></i> View
+                                        Entrance</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" id="logout-btn" style="color: var(--danger-color);"><i
+                                            class="fa-solid fa-power-off"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Content Area -->
+            <div id="content-area" class="content-wrapper">
+                <!-- Dashboard Content (Default) -->
+                <!-- Dashboard Content (Default) -->
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="icon-box purple"><i class="fa-solid fa-ticket"></i></div>
+                        <div class="stat-info">
+                            <h3>Total New Booking</h3>
+                            <p class="number">0</p>
+                            <p class="trend">Empty</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box green"><i class="fa-solid fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Approved Booking</h3>
+                            <p class="number">156</p>
+                            <p class="trend up">+12% this month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box orange"><i class="fa-solid fa-circle-xmark"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Cancelled Booking</h3>
+                            <p class="number">12</p>
+                            <p class="trend down">-2% from last month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box blue"><i class="fa-solid fa-bell-concierge"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Services</h3>
+                            <p class="number">9</p>
+                            <p class="trend">Active</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="recent-section">
+                        <div class="section-header">
+                            <h2>Recent Activities</h2>
+                            <button class="btn-primary">Browse Services</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Event Name</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Wedding Ceremony</td>
+                                        <td>24 Oct 2023</td>
+                                        <td><span class="status completed">Completed</span></td>
+                                        <td><button class="icon-btn"><i
+                                                    class="fa-solid fa-ellipsis-vertical"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Selected Events</h2>
+            <button class="close-cart" id="close-cart"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Cart Items will be injected here -->
+            <div class="empty-cart-msg">
+                <i class="fa-solid fa-calendar-check"></i>
+                <p>No events selected</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <button class="btn-primary" id="checkout-btn" style="width: 100%">Checkout</button>
+        </div>
+    </div>
+
+    <div class="cart-overlay" id="cart-overlay"></div>
+
+    <!-- Magic Navigation Tabs -->
+    <div class="magic-nav-container">
+        <ul class="navigation">
+            <li class="active">
+                <a href="#dashboard">
+                    <span class="icon">
+                        <ion-icon name="home-outline"></ion-icon>
+                    </span>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="#events">
+                    <span class="icon">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                    </span>
+                    <span class="text">Events</span>
+                </a>
+            </li>
+            <li>
+                <a href="#services">
+                    <span class="icon">
+                        <ion-icon name="briefcase-outline"></ion-icon>
+                    </span>
+                    <span class="text">Services</span>`
+                </a>
+            </li>
+            <li>
+                <a href="#profile">
+                    <span class="icon">
+                        <ion-icon name="person-outline"></ion-icon>
+                    </span>
+                    <span class="text">Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="#contact-shree-events">
+                    <span class="icon">
+                        <ion-icon name="mail-outline"></ion-icon>
+                    </span>
+                    <span class="text">Contact</span>
+                </a>
+            </li>
+            <div class="indicator"></div>
+        </ul>
+    </div>
+
+    <script src="https://static-bundle.visme.co/forms/vismeforms-embed.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
